@@ -1,0 +1,53 @@
+Создание backend (.NET MVC + Web API)
+
+1. Открой терминал (PowerShell или CMD) в корневой папке проекта.
+
+2. Выполни команду для создания MVC-проекта:
+   dotnet new mvc -n server
+
+   После этого появится структура:
+   ProjectManagementSystem/
+   └── server/
+       ├── Controllers/
+       ├── Models/
+       ├── Views/
+       ├── Program.cs
+       └── server.csproj
+
+3. Перейди в папку server:
+   cd server
+
+4. Создай подпапку для Web API:
+   mkdir Controllers\Api
+
+5. Внутри Controllers\Api создай файл ProjectApiController.cs и добавь код:
+
+   using Microsoft.AspNetCore.Mvc;
+
+   namespace server.Controllers.Api
+   {
+       [ApiController]
+       [Route("api/[controller]")]
+       public class ProjectApiController : ControllerBase
+       {
+           [HttpGet]
+           public IActionResult GetProjects()
+           {
+               var projects = new[]
+               {
+                   new { Id = 1, Name = "FinTech App" },
+                   new { Id = 2, Name = "AI Recruiter" }
+               };
+
+               return Ok(projects);
+           }
+       }
+   }
+
+6. Запусти сервер для проверки:
+   dotnet run
+
+7. Открой в браузере:
+   http://localhost:5000/api/projectapi
+
+Если всё сделано правильно, ты увидишь JSON-ответ со списком проектов.
