@@ -45,6 +45,33 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
+## Tailwind CSS
+
+This project uses Tailwind CSS v3 integrated with Create React App.
+
+Quick notes:
+
+- Config files: `tailwind.config.js` and `postcss.config.js` are present.
+- Tailwind is included via directives in `src/index.css`:
+	- `@tailwind base;`
+	- `@tailwind components;`
+	- `@tailwind utilities;`
+- Content paths are configured to scan `./src/**/*.{js,jsx,ts,tsx}` and `./public/index.html`.
+
+Run locally:
+
+```bash
+npm start
+```
+
+Build production assets:
+
+```bash
+npm run build
+```
+
+If you add files with Tailwind classes outside `src/`, update `tailwind.config.js` content paths.
+
 ### Code Splitting
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)

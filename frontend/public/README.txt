@@ -1,0 +1,1 @@
+public/ — статические файлы, доступные напрямую: index.html, favicon.ico, manifest.json, robots.txt.

@@ -1,0 +1,1 @@
+pages/ — папка для страниц (роутов) приложения: Dashboard, Login, Register, ProjectDetails, TeamPage и др.

@@ -1,0 +1,1 @@
+services/ — функции для работы с API: настройка axios, projectService (CRUD проектов) и др.
