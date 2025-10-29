@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import './ScrollReveal.css';
+import '../styles/components/ScrollReveal.css';
 
 /**
  * ScrollReveal - компонент для анимаций элементов при прокрутке

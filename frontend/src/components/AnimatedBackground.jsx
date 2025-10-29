@@ -1,5 +1,5 @@
 import React from 'react';
-import './AnimatedBackground.css';
+import '../styles/components/AnimatedBackground.css';
 
 /**
  * AnimatedBackground - компонент для создания жидкого фона с Liquid Glass эффектом

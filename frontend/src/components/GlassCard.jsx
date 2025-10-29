@@ -1,5 +1,5 @@
 import React from 'react';
-import './GlassCard.css';
+import '../styles/components/GlassCard.css';
 
 /**
  * GlassCard - переиспользуемая карточка с Glassmorphism эффектом

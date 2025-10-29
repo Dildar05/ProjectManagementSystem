@@ -2,13 +2,24 @@ import React, { useState, useEffect } from 'react';
 import ImagePlaceholder from '../components/ImagePlaceholder';
 import AnimatedCounter from '../components/AnimatedCounter';
 import ScrollReveal from '../components/ScrollReveal';
-import ThemeToggle from '../components/ThemeToggle';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import useDarkMode from '../hooks/useDarkMode';
-import './Landing.css';
+import '../styles/pages/Landing.css';
 
 const Landing = () => {
   const [isDark, toggleTheme] = useDarkMode();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const sliderRef = React.useRef(null);
+  
+  const screenshots = [
+    { type: 'kanban', label: 'Kanban-доска' },
+    { type: 'profile', label: 'Профиль пользователя' },
+    { type: 'leaderboard', label: 'Таблица лидеров' },
+    { type: 'chat', label: 'Встроенный чат' },
+    { type: 'skills', label: 'Дерево навыков' }
+  ];
 
   // Handle navbar scroll effect
   useEffect(() => {
@@ -20,6 +31,70 @@ const Landing = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Handle slider scroll to update current slide indicator
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const handleSliderScroll = () => {
+      const slideWidth = slider.children[0]?.offsetWidth || 0;
+      const gap = 32;
+      const scrollLeft = slider.scrollLeft;
+      const newSlide = Math.round(scrollLeft / (slideWidth + gap));
+      setCurrentSlide(newSlide);
+    };
+
+    slider.addEventListener('scroll', handleSliderScroll);
+    return () => slider.removeEventListener('scroll', handleSliderScroll);
+  }, []);
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowLeft') {
+        prevSlide();
+      } else if (e.key === 'ArrowRight') {
+        nextSlide();
+      }
+    };
+
+    // Only add keyboard listener when slider is in view
+    const slider = sliderRef.current;
+    if (slider) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [currentSlide]);
+
+  // Slider navigation functions
+  const nextSlide = () => {
+    const newSlide = (currentSlide + 1) % screenshots.length;
+    setCurrentSlide(newSlide);
+    scrollToSlide(newSlide);
+  };
+
+  const prevSlide = () => {
+    const newSlide = currentSlide === 0 ? screenshots.length - 1 : currentSlide - 1;
+    setCurrentSlide(newSlide);
+    scrollToSlide(newSlide);
+  };
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+    scrollToSlide(index);
+  };
+
+  const scrollToSlide = (index) => {
+    if (sliderRef.current) {
+      const slideWidth = sliderRef.current.children[0].offsetWidth;
+      const gap = 32; // gap between slides
+      sliderRef.current.scrollTo({
+        left: (slideWidth + gap) * index,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <div className="landing">
       {/* Animated Background Shapes */}
@@ -29,28 +104,8 @@ const Landing = () => {
         <div className="liquid-shape shape-3"></div>
       </div>
 
-      {/* Navigation */}
-      <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
-        <div className="container">
-          <div className="nav-content">
-            <div className="logo">
-              <span className="logo-icon">🎮</span>
-              <span className="logo-text">Korastra</span>
-            </div>
-            <ul className="nav-links">
-              <li><a href="#features">Возможности</a></li>
-              <li><a href="#benefits">Преимущества</a></li>
-              <li><a href="#pricing">Цены</a></li>
-              <li><a href="#blog">Новости</a></li>
-            </ul>
-            <div className="nav-actions">
-              <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
-              <button className="btn-secondary">Войти</button>
-              <button className="btn-primary">Начать бесплатно</button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Navigation - Using Header Component */}
+      <Header isDark={isDark} toggleTheme={toggleTheme} isScrolled={isScrolled} />
 
       {/* Hero Section */}
       <ScrollReveal animation="fade" duration={1000}>
@@ -226,28 +281,32 @@ const Landing = () => {
               Современный, интуитивно понятный дизайн для максимального комфорта работы
             </p>
           </div>
-          <div className="screenshots-slider">
-            <div className="screenshot-card glass-effect">
-              <ImagePlaceholder type="kanban" width="800px" height="500px" />
-              <div className="screenshot-label">Kanban-доска</div>
-            </div>
-            <div className="screenshot-card glass-effect">
-              <ImagePlaceholder type="profile" width="800px" height="500px" />
-              <div className="screenshot-label">Профиль пользователя</div>
-            </div>
-            <div className="screenshot-card glass-effect">
-              <ImagePlaceholder type="leaderboard" width="800px" height="500px" />
-              <div className="screenshot-label">Таблица лидеров</div>
-            </div>
-            <div className="screenshot-card glass-effect">
-              <ImagePlaceholder type="chat" width="800px" height="500px" />
-              <div className="screenshot-label">Встроенный чат</div>
-            </div>
-            <div className="screenshot-card glass-effect">
-              <ImagePlaceholder type="skills" width="800px" height="500px" />
-              <div className="screenshot-label">Дерево навыков</div>
-            </div>
+        </div>
+        <div className="screenshots-wrapper">
+          <button className="slider-nav slider-nav-prev" onClick={prevSlide} aria-label="Previous slide">
+            <span>←</span>
+          </button>
+          <div className="screenshots-slider" ref={sliderRef}>
+            {screenshots.map((screenshot, index) => (
+              <div key={index} className="screenshot-card glass-effect">
+                <ImagePlaceholder type={screenshot.type} width="800px" height="500px" />
+                <div className="screenshot-label">{screenshot.label}</div>
+              </div>
+            ))}
           </div>
+          <button className="slider-nav slider-nav-next" onClick={nextSlide} aria-label="Next slide">
+            <span>→</span>
+          </button>
+        </div>
+        <div className="slider-dots">
+          {screenshots.map((_, index) => (
+            <button
+              key={index}
+              className={`slider-dot ${currentSlide === index ? 'active' : ''}`}
+              onClick={() => goToSlide(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
         </div>
       </section>
       </ScrollReveal>
@@ -381,7 +440,8 @@ const Landing = () => {
       </section>
       </ScrollReveal>
 
-      {/* Integration Section */}
+      {/* Integration Section - COMMENTED OUT */}
+      {/* 
       <ScrollReveal animation="fade" delay={100}>
         <section className="integration">
           <div className="container">
@@ -392,7 +452,6 @@ const Landing = () => {
               </p>
             </div>
             <div className="integration-grid">
-              {/* GitHub */}
               <div className="integration-card glass-effect">
                 <div className="integration-icon">
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -403,7 +462,6 @@ const Landing = () => {
                 <p className="integration-desc">Синхронизация репозиториев и задач</p>
               </div>
 
-              {/* Slack */}
               <div className="integration-card glass-effect">
                 <div className="integration-icon slack">
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -414,7 +472,6 @@ const Landing = () => {
                 <p className="integration-desc">Уведомления в реальном времени</p>
               </div>
 
-              {/* Jira */}
               <div className="integration-card glass-effect">
                 <div className="integration-icon jira">
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -425,7 +482,6 @@ const Landing = () => {
                 <p className="integration-desc">Импорт проектов и спринтов</p>
               </div>
 
-              {/* Discord */}
               <div className="integration-card glass-effect">
                 <div className="integration-icon discord">
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -436,7 +492,6 @@ const Landing = () => {
                 <p className="integration-desc">Уведомления для команды</p>
               </div>
 
-              {/* Trello */}
               <div className="integration-card glass-effect">
                 <div className="integration-icon trello">
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -447,7 +502,6 @@ const Landing = () => {
                 <p className="integration-desc">Миграция досок и карточек</p>
               </div>
 
-              {/* Google Workspace */}
               <div className="integration-card glass-effect">
                 <div className="integration-icon google">
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -461,7 +515,6 @@ const Landing = () => {
                 <p className="integration-desc">Календарь и документы</p>
               </div>
 
-              {/* Microsoft */}
               <div className="integration-card glass-effect">
                 <div className="integration-icon microsoft">
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -472,7 +525,6 @@ const Landing = () => {
                 <p className="integration-desc">Teams и Office интеграция</p>
               </div>
 
-              {/* Zoom */}
               <div className="integration-card glass-effect">
                 <div className="integration-icon zoom">
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -495,6 +547,7 @@ const Landing = () => {
           </div>
         </section>
       </ScrollReveal>
+      */}
 
       {/* FAQ Section */}
       <ScrollReveal animation="slide-up" delay={100}>
@@ -700,57 +753,8 @@ const Landing = () => {
       </section>
       </ScrollReveal>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="container">
-          <div className="footer-content">
-            <div className="footer-section">
-              <div className="footer-logo">
-                <span className="logo-icon">🎮</span>
-                <span className="logo-text">Korastra</span>
-              </div>
-              <p className="footer-description">
-                Превращаем управление проектами в увлекательное путешествие
-              </p>
-            </div>
-            <div className="footer-section">
-              <h4>Продукт</h4>
-              <ul>
-                <li><a href="#features">Возможности</a></li>
-                <li><a href="#pricing">Цены</a></li>
-                <li><a href="#demo">Демо</a></li>
-                <li><a href="#updates">Обновления</a></li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h4>Компания</h4>
-              <ul>
-                <li><a href="#about">О нас</a></li>
-                <li><a href="#blog">Блог</a></li>
-                <li><a href="#careers">Карьера</a></li>
-                <li><a href="#contact">Контакты</a></li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h4>Поддержка</h4>
-              <ul>
-                <li><a href="#help">Справка</a></li>
-                <li><a href="#docs">Документация</a></li>
-                <li><a href="#api">API</a></li>
-                <li><a href="#status">Статус</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <p>&copy; 2025 Korastra. Все права защищены.</p>
-            <div className="footer-links">
-              <a href="#privacy">Конфиденциальность</a>
-              <a href="#terms">Условия</a>
-              <a href="#cookies">Cookies</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Footer - Using Footer Component */}
+      <Footer />
     </div>
   );
 };

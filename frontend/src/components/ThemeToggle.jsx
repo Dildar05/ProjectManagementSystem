@@ -1,5 +1,5 @@
 import React from 'react';
-import './ThemeToggle.css';
+import '../styles/components/ThemeToggle.css';
 
 /**
  * ThemeToggle - переключатель темной/светлой темы

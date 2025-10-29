@@ -1,5 +1,5 @@
 import React from 'react';
-import './ImagePlaceholder.css';
+import '../styles/components/ImagePlaceholder.css';
 
 /**
  * ImagePlaceholder - красивые SVG плейсхолдеры для изображений

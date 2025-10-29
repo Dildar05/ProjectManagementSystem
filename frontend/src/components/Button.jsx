@@ -1,5 +1,5 @@
 import React from 'react';
-import './Button.css';
+import '../styles/components/Button.css';
 
 /**
  * Button - универсальная кнопка с различными вариантами стилей

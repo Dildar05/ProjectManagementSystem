@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './AnimatedCounter.css';
+import '../styles/components/AnimatedCounter.css';
 
 /**
  * AnimatedCounter - анимированный счетчик, который плавно увеличивается до целевого значения
