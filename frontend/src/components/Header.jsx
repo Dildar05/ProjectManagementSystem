@@ -1,8 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 import '../styles/components/Header.css';
 
 const Header = ({ isDark, toggleTheme, isScrolled }) => {
+  const navigate = useNavigate();
+
   return (
     <nav className={`header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="container">
@@ -19,8 +22,8 @@ const Header = ({ isDark, toggleTheme, isScrolled }) => {
           </ul>
           <div className="nav-actions">
             <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
-            <button className="btn-secondary">Войти</button>
-            <button className="btn-primary">Начать бесплатно</button>
+            <button className="btn-secondary" onClick={() => navigate('/auth')}>Войти</button>
+            <button className="btn-primary" onClick={() => navigate('/auth')}>Начать бесплатно</button>
           </div>
         </div>
       </div>
